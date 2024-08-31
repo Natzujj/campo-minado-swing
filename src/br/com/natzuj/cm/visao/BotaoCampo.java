@@ -6,6 +6,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 
 import br.com.natzuj.cm.modelo.Campo;
 import br.com.natzuj.cm.modelo.CampoEvento;
@@ -27,6 +28,8 @@ public class BotaoCampo extends JButton implements CampoObservador, MouseListene
         setOpaque(true);
         addMouseListener(this);
         campo.registrarObservador(this);
+
+        // addActionListener(e -> SwingUtilities.getWindowAncestor(this).requestFocusInWindow());
     }
 
     @Override
@@ -44,12 +47,17 @@ public class BotaoCampo extends JButton implements CampoObservador, MouseListene
             default:
                 aplicarEstiloPadrao();
         }
+
+        SwingUtilities.invokeLater(() -> {
+            repaint();
+            validate();
+        });
     }
 
     private void aplicarEstiloPadrao() {
         setBackground(BG_PADRAO);
         setText("");
-        
+        setBorder(BorderFactory.createBevelBorder(0));        
     }
 
     private void aplicarEstilExplodir() {
@@ -107,10 +115,13 @@ public class BotaoCampo extends JButton implements CampoObservador, MouseListene
         } else {
             campo.alternarMarcacao();
         }
+        SwingUtilities.getWindowAncestor(this).requestFocusInWindow();
     }
     
     public void mousePressed(MouseEvent e) {}
     public void mouseReleased(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
-    public void mouseExited(MouseEvent e) {}
+
+    public void mouseExited(MouseEvent e) {
+    }
 }
