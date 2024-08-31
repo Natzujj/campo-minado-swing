@@ -1,10 +1,12 @@
 package br.com.natzuj.cm.visao;
 
 import java.awt.Color;
+import java.awt.MediaTracker;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
@@ -20,6 +22,9 @@ public class BotaoCampo extends JButton implements CampoObservador, MouseListene
     private final Color TEXTO_VERDE = new Color(0, 100, 0);
 
     private Campo campo;
+    
+    private ImageIcon iconeBomba = new ImageIcon(getClass().getResource("/resources/explode.png"));;
+    private ImageIcon iconeBandeira = new ImageIcon(getClass().getResource("/resources/mark.png"));
 
     public BotaoCampo(Campo campo) {
         this.campo = campo;
@@ -28,8 +33,10 @@ public class BotaoCampo extends JButton implements CampoObservador, MouseListene
         setOpaque(true);
         addMouseListener(this);
         campo.registrarObservador(this);
-
-        // addActionListener(e -> SwingUtilities.getWindowAncestor(this).requestFocusInWindow());
+        
+        if (iconeBomba.getImageLoadStatus() != MediaTracker.COMPLETE) {
+            System.out.println("Woops");
+        }
     }
 
     @Override
@@ -57,19 +64,22 @@ public class BotaoCampo extends JButton implements CampoObservador, MouseListene
     private void aplicarEstiloPadrao() {
         setBackground(BG_PADRAO);
         setText("");
+        setIcon(null);
         setBorder(BorderFactory.createBevelBorder(0));        
     }
 
     private void aplicarEstilExplodir() {
         setBackground(BG_EXPLODIR);
         setForeground(Color.WHITE);
-        setText("X");
+        setText("");
+        setIcon(iconeBomba);
     }
     
     private void aplicarEstiloMarcar() {
         setBackground(BG_MARCAR);
         setForeground(Color.BLACK);
-        setText("M");
+        setText("");
+        setIcon(iconeBandeira);
     }
 
     private void aplicarEstiloAbrir() {
@@ -77,7 +87,7 @@ public class BotaoCampo extends JButton implements CampoObservador, MouseListene
         setBorder(BorderFactory.createLineBorder(Color.GRAY));
         
         if (campo.isMinado()) {
-            setBackground(BG_EXPLODIR);
+            aplicarEstilExplodir();
             return;
         }
 

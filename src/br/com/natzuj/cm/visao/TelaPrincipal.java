@@ -21,14 +21,12 @@ public class TelaPrincipal extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
         setFocusable(true);
-        
+
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 input.append(e.getKeyChar());
-
                 if (input.toString().endsWith("hack")) {
-                    System.out.println("DIGITOU");
                     tabuleiro.alternarMarcacaoHack();
                     input.setLength(0); 
                 }
