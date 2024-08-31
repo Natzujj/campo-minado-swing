@@ -5,10 +5,19 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class Tabuleiro implements CampoObservador{
-    private int linhas, colunas, minas;
+    private final int linhas, colunas, minas;
 
     private final List<Campo> campos = new ArrayList<>();
     private final List<Consumer<ResultadoEvento>> observadores = new ArrayList<>();
+
+    
+    public int getLinhas() {
+        return linhas;
+    }
+
+    public int getColunas() {
+        return colunas;
+    }
 
     public Tabuleiro(int linhas, int colunas, int minas) {
         this.linhas = linhas;
@@ -18,6 +27,10 @@ public class Tabuleiro implements CampoObservador{
         gerarCampos();
         associarVizinhos();
         sortearMinas();
+    }
+
+    public void paraCadaCampo(Consumer<Campo> funcao) {
+        campos.forEach(funcao);
     }
 
     public void registrarObservador(Consumer<ResultadoEvento> observador) {
