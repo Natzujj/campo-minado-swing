@@ -2,11 +2,13 @@ package br.com.natzuj.cm.modelo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
-public class Tabuleiro {
+public class Tabuleiro implements CampoObservador{
     private int linhas, colunas, minas;
 
     private final List<Campo> campos = new ArrayList<>();
+    private final List<Consumer<ResultadoEvento>> observadores = new ArrayList<>();
 
     public Tabuleiro(int linhas, int colunas, int minas) {
         this.linhas = linhas;
@@ -16,6 +18,14 @@ public class Tabuleiro {
         gerarCampos();
         associarVizinhos();
         sortearMinas();
+    }
+
+    public void registrarObservador(Consumer<ResultadoEvento> observador) {
+        observadores.add(observador);
+    }
+
+    public void notificarObservadores(boolean resultado) {
+        observadores.stream().forEach(o -> o.accept(new ResultadoEvento(resultado)));
     }
 
     private void sortearMinas() {
@@ -45,14 +55,9 @@ public class Tabuleiro {
     }
 
     public void abrir(int linha, int coluna) {
-        try {
-            campos.stream().filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
-                    .findFirst().ifPresent(c -> c.abrir());
-        } catch (Exception e) {
-            // TODO Ajustar implementação do método abrir
-            campos.forEach(c -> c.setAberto(true));
-            throw e;
-        }
+        campos.stream().filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
+                .findFirst().ifPresent(c -> c.abrir());
+
     }
 
     public void alternarMarcacao(int linha, int coluna) {
@@ -68,9 +73,26 @@ public class Tabuleiro {
     private void gerarCampos() {
         for (int i = 0; i < linhas; i++) {
             for (int j = 0; j < colunas; j++) {
-                campos.add(new Campo(i, j));
+                Campo campo = new Campo(i, j);
+                campo.registrarObservador(this);
+                campos.add(campo);
             }
         }
+    }
+
+    @Override
+    public void eventoOcorreu(Campo campo, CampoEvento evento) {
+        if (evento == CampoEvento.EXPLODIR) {
+            mostrarMinas();
+            notificarObservadores(false);
+        } else if (objetivoAlcancado()) {
+            notificarObservadores(true);
+        }
+    }
+    
+    private void mostrarMinas() {
+        campos.stream().filter(c -> c.isMinado()).forEach(c -> c.setAberto(true));
+        
     }
 
 }
