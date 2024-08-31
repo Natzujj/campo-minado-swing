@@ -18,7 +18,7 @@ Este é um jogo de Campo Minado desenvolvido em Java durante o acompanhamento da
    git clone https://github.com/Natzujj/campo-minado-swing.git
    ```
 
-2. Navegue até o diretodio do projeto:
+2. Navegue até o diretorio do projeto:
     ```bash
         cd campo-minado
     ```
